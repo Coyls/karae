@@ -1,6 +1,6 @@
 import datetime
 from typing import Any
-from plantState import GlobalState, SetupState
+from plantState import PlantState, SetupState
 from simple_websocket_server import WebSocket
 from utils.connectionManager import ConnectionManager
 from utils.protocol import ProtocolDecodeur
@@ -9,7 +9,7 @@ from utils.storage import Storage
 from utils.types import BtnType
 
 class Plant:
-    state : GlobalState
+    state : PlantState
     connectionManager = ConnectionManager()
     storage : Storage
 
@@ -35,7 +35,7 @@ class Plant:
     def process(self):
         self.state.afterProcess()
 
-    def setState(self, state : GlobalState):
+    def setState(self, state : PlantState):
         self.state = state
 
     def decodeData(self, data : str) -> list[str]:

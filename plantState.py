@@ -1,8 +1,9 @@
 import datetime
+from awakenState import AwakeHelloState, AwakenState
 from utils.protocol import ProtocolDecodeur, ProtocolGenerator
 from utils.types import BtnType
 
-class GlobalState:
+class PlantState:
     stateName : str
 
     # ! plant : Plant --> pas possible d'importer ou de setup
@@ -25,7 +26,7 @@ class GlobalState:
     def afterProcess(self):
         pass
 
-class SetupState(GlobalState):
+class SetupState(PlantState):
     # Wait for all connections
 
     stateName = "setup-state"
@@ -64,7 +65,7 @@ class SetupState(GlobalState):
             self.twofa += 1
             return False
         
-class StandbyAfterSetup(GlobalState):
+class StandbyAfterSetup(PlantState):
     # Wait for user action or pass
     stateName = "standby-after-setup"
 
@@ -95,7 +96,7 @@ class StandbyAfterSetup(GlobalState):
     def afterProcess(self):
         pass
 
-class TutorielState(GlobalState):
+class TutorielState(PlantState):
 
     stateName = "tutoriel-state"
 
@@ -121,7 +122,7 @@ class TutorielState(GlobalState):
     def playTutorial(self):
         print("Play tutorial")
 
-class SleepState(GlobalState):
+class SleepState(PlantState):
     
     stateName = "sleep-state"
 
@@ -145,7 +146,7 @@ class SleepState(GlobalState):
     def afterProcess(self):
         pass
 
-class WakeUpState(GlobalState):
+class WakeUpState(PlantState):
 
     stateName = "wake-up-state"
 
@@ -177,9 +178,14 @@ class WakeUpState(GlobalState):
     def afterProcess(self):
         pass
 
-class AwakeState(GlobalState):
+class AwakeState(PlantState):
 
     stateName = "awake-state"
+    awakeState : AwakenState
+
+    def __init__(self, plant):
+        self.awakeState = AwakeHelloState(self)
+        super().__init__(plant)
 
     def handleSwitch(self):
         pass
@@ -196,9 +202,16 @@ class AwakeState(GlobalState):
     def afterProcess(self):
         print("Go To StandbyAfterAwake")
         print("Systeme/Miror/jsp")
+        self.awakeState.process()
         self.plant.setState(StandbyAfterAwake(self.plant, 10))
 
-class StandbyAfterAwake(GlobalState):
+    # ----------------------------------------
+
+    def setState(self, state : AwakenState):
+        self.state = state
+    
+
+class StandbyAfterAwake(PlantState):
 
     stateName = "standby-after-awake"
     
@@ -229,7 +242,7 @@ class StandbyAfterAwake(GlobalState):
     def afterProcess(self):
         pass
 
-class SelectPlantState(GlobalState):
+class SelectPlantState(PlantState):
     
     stateName = "select-plant-state"
 
