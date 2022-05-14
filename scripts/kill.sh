@@ -2,7 +2,7 @@
 # launcher.sh
 # Execute POC
 
-cd /home/pi/Documents/poc
+cd /home/pi/Documents/karae
 sudo pkill -f server.py 
 sudo pkill -f tmp.py 
 sudo pkill -f proximity.py 

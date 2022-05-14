@@ -44,6 +44,7 @@ class Plant:
 
     def rooter(self, client : WebSocket):
         [key, val] = self.decodeData(client.data)
+        print("SELF : ", self)
 
         if key == "/name":
             self.connectionManager.setClientName(client,val)

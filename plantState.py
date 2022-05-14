@@ -59,7 +59,7 @@ class SetupState(PlantState):
     def waitForAllConnection(self) -> bool:
         nb = len(self.plant.connectionManager.clients)
         
-        if (nb >= 3 and self.twofa >= 3):# ! 5 pour l'instant
+        if (nb >= 5 and self.twofa >= 5):# ! 5 pour l'instant
             return True
         else:
             self.twofa += 1
@@ -88,7 +88,8 @@ class StandbyAfterSetup(PlantState):
     def handleDelay(self,  acces : str):
         print("Go to SleepState")
         if (acces == self.stateName):
-            self.plant.setState(SleepState(self.plant))
+            # !!!!!!!!!!!!!!!!!! SleepState
+            self.plant.setState(TutorielState(self.plant))
 
     def handleButtons(self, type : BtnType):
         pass
@@ -99,6 +100,10 @@ class StandbyAfterSetup(PlantState):
 class TutorielState(PlantState):
 
     stateName = "tutoriel-state"
+
+    def __init__(self, plant):
+        super().__init__(plant)
+        self.afterProcess()
 
     def handleSwitch(self):
         pass
@@ -116,6 +121,10 @@ class TutorielState(PlantState):
         self.playTutorial()
         print("Go to SleepState")
         self.plant.setState(SleepState(self.plant))
+        print("N'ARRIVE PAS A CHANGER L'ETAT")
+        print("State : ", self.plant.state)
+        print(" SELF ON STATE : " , self.plant)
+        
 
     # ----------------------------------------
 
@@ -169,7 +178,8 @@ class WakeUpState(PlantState):
     def handleDelay(self,  acces : str):
         print("Go to SleepState")
         if (acces == self.stateName):
-            self.plant.setState(SleepState(self.plant))
+            # !!!!!!!!!!!!!!!!! SleepState
+            self.plant.setState(AwakeState(self.plant))
 
     def handleButtons(self, type : BtnType):
         print("Go to SelectPlantState")
@@ -184,8 +194,9 @@ class AwakeState(PlantState):
     awakeState : AwakenState
 
     def __init__(self, plant):
-        self.awakeState = AwakeHelloState(self)
         super().__init__(plant)
+        self.awakeState = AwakeHelloState(self)
+        self.afterProcess()
 
     def handleSwitch(self):
         pass
@@ -202,7 +213,7 @@ class AwakeState(PlantState):
     def afterProcess(self):
         print("Go To StandbyAfterAwake")
         print("Systeme/Miror/jsp")
-        self.awakeState.process()
+        self.awakeState.start()
         self.plant.setState(StandbyAfterAwake(self.plant, 10))
 
     # ----------------------------------------
