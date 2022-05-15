@@ -20,7 +20,7 @@ class Button:
     def start(self):
         while True:
             print(self.name , " is working !")
-            time.sleep(30)
+            time.sleep(60)
 
     def initName(self):
         data = ProtocolGenerator("name", self.name)

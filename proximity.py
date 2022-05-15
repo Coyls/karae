@@ -18,7 +18,7 @@ class ProximitySensor:
         try:
             while True:
                 print(self.name , " is working !")
-                time.sleep(10)
+                time.sleep(60)
         except KeyboardInterrupt:
                 print(self.name , " shutdown !")
                 GPIO.cleanup()

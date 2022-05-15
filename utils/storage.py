@@ -20,7 +20,7 @@ class PlantsTypeManager:
 
 class Storage:
     store : dict[str, str] = {}
-    notStored = ["eureka", "button"]
+    notStored = ["eureka", "button", "process"]
     fileManager = FileManager('./db/db.txt')
     plantsFilePath = "./db/plants.json"
     plantCarac = {}

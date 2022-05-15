@@ -21,7 +21,7 @@ class GroudHumiditySensor:
         def start(self):
                 while True:
                         print(self.name , " is working !")
-                        time.sleep(10)
+                        time.sleep(60)
         
         def setupHardware(self):
                 GPIO.setmode(GPIO.BCM)

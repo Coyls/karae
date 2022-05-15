@@ -10,5 +10,6 @@ python3 ./proximity.py &
 python3 ./rotary.py &
 python3 ./ground-humidity.py &
 python3 ./delay.py &
+python3 ./process.py &
 python3 ./button.py &
 sudo node ./puck/switch.js &

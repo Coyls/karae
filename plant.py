@@ -28,12 +28,15 @@ class Plant:
 
     def handleDelay(self, stateName : str):
         self.state.handleDelay(stateName)
+    
+    def handleProcess(self, stateName : str):
+        self.state.afterProcess(stateName)
 
     def handleButtons(self, type:BtnType):
         self.state.handleButtons(type)
 
     def process(self):
-        self.state.afterProcess()
+        self.state.afterProcess("")
 
     def setState(self, state : PlantState):
         self.state = state
@@ -44,7 +47,6 @@ class Plant:
 
     def rooter(self, client : WebSocket):
         [key, val] = self.decodeData(client.data)
-        print("SELF : ", self)
 
         if key == "/name":
             self.connectionManager.setClientName(client,val)
@@ -55,6 +57,10 @@ class Plant:
         if key == "/eureka":
             self.handleDelay(val)
             print("/eureka : ",self.state)
+
+        if key == "/process":
+            self.handleProcess(val)
+            print("/process : ",self.state)
 
         if key == "/switch":
             self.handleSwitch()

@@ -10,4 +10,5 @@ sudo pkill -f rotary.py
 sudo pkill -f ground-humidity.py
 sudo pkill -f switch.js 
 sudo pkill -f delay.py 
+sudo pkill -f process.py 
 sudo pkill -f button.py
