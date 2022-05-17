@@ -1,6 +1,7 @@
 import datetime
+import subprocess
 from awakenState import AwakeHelloState, AwakenState
-from utils.protocol import ProtocolDecodeur, ProtocolGenerator
+from utils.protocol import ProtocolGenerator
 from utils.types import BtnType
 
 NUMBER_CONNECTION = 6
@@ -62,8 +63,11 @@ class SetupState(PlantState):
         nb = len(self.plant.connectionManager.clients)
         
         if (nb >= NUMBER_CONNECTION and self.twofa >= NUMBER_CONNECTION):# ! 6 pour l'instant
+            subprocess.run(["sh","./scripts/speak.sh","Demarage terminer"])
             return True
         else:
+            if (self.twofa == 1):
+                subprocess.run(["sh","./scripts/speak.sh","Demarage en cours"])
             self.twofa += 1
             return False
         
@@ -73,6 +77,7 @@ class StandbyAfterSetup(PlantState):
 
     def __init__(self, plant,delay: int):
         super().__init__(plant)
+        subprocess.run(["sh","./scripts/speak.sh","Si vous souhaiter lancer le tutoriel appuyer sur votre colier !"])
         self.delay = delay
         cls = plant.connectionManager.clients
         res = dict((v,k) for k,v in cls.items())
@@ -90,8 +95,7 @@ class StandbyAfterSetup(PlantState):
     def handleDelay(self,  acces : str):
         print("Go to SleepState")
         if (acces == self.stateName):
-            # !!!!!!!!!!!!!!!!!! SleepState
-            self.plant.setState(TutorielState(self.plant))
+            self.plant.setState(SleepState(self.plant))
 
     def handleButtons(self, type : BtnType):
         pass
@@ -104,6 +108,7 @@ class TutorielState(PlantState):
     stateName = "tutoriel-state"
 
     def __init__(self, plant):
+        subprocess.run(["sh","./scripts/speak.sh","Lancement du tutoriel"])
         super().__init__(plant)
         cls = plant.connectionManager.clients
         res = dict((v,k) for k,v in cls.items())
@@ -165,6 +170,7 @@ class WakeUpState(PlantState):
 
     def __init__(self, plant,delay: int):
         super().__init__(plant)
+        subprocess.run(["sh","./scripts/speak.sh","Petit fils de pute, pourquoi tu m'a reveiller ?"])
         self.delay = delay
         cls = plant.connectionManager.clients
         res = dict((v,k) for k,v in cls.items())
@@ -182,8 +188,8 @@ class WakeUpState(PlantState):
     def handleDelay(self,  acces : str):
         print("Go to SleepState")
         if (acces == self.stateName):
-            # !!!!!!!!!!!!!!!!! SleepState
-            self.plant.setState(AwakeState(self.plant))
+            subprocess.run(["sh","./scripts/speak.sh","Je retourne dormir"])
+            self.plant.setState(SleepState(self.plant))
 
     def handleButtons(self, type : BtnType):
         print("Go to SelectPlantState")
@@ -198,6 +204,7 @@ class AwakeState(PlantState):
     awakeState : AwakenState
 
     def __init__(self, plant):
+        subprocess.run(["sh","./scripts/speak.sh","Ok connard je vais t'aider !"])
         super().__init__(plant)
         self.awakeState = AwakeHelloState(self)
         cls = plant.connectionManager.clients
@@ -266,6 +273,10 @@ class SelectPlantState(PlantState):
     
     stateName = "select-plant-state"
 
+    def __init__(self, plant):
+        super().__init__(plant)
+        subprocess.run(["sh","./scripts/speak.sh","Selectionner votre plant"])
+
     def handleSwitch(self):
         pass
 
@@ -296,4 +307,6 @@ class SelectPlantState(PlantState):
 
     def okButton(self):
         print("Go to SleepState")
+        p = self.plant.storage.plantCarac["name"]
+        subprocess.run(["sh","./scripts/speak.sh",f"{p} a été selectioner !"])
         self.plant.setState(SleepState(self.plant))

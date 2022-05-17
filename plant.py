@@ -86,7 +86,7 @@ class Plant:
             self.handleButtons(type.value)
             print(self.storage.plantCarac["name"])
             # Speak.speak(self.storage.plantCarac["name"])
-            Speak.speakGtts(self.storage.plantCarac["name"] + f" et la température est de {self.storage.store['temperature']} degrée")
+            # Speak.speakGtts(self.storage.plantCarac["name"] + f" et la température est de {self.storage.store['temperature']} degrée")
             print("/button : ",self.state)
 
         

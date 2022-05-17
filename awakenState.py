@@ -1,5 +1,8 @@
 # from plantState import AwakeState
 
+import subprocess
+
+
 class AwakenState:
 
     # ! awake : AwakeState --> pas possible d'importer ou de setup
@@ -38,13 +41,13 @@ class AwakeSetupState(AwakenState):
     
     def process(self):
         print("AwakeSetupState")
-        lost = self.getConnectionLost()
-        isBroken = self.checkConnectionLost(lost)
+        losts = self.getConnectionLost()
+        isBroken = self.checkConnectionLost(losts)
         if isBroken:
             # Message d'erreur enonssant les capteur deco
             # et demande a l'utilisateur de redemarer Karae
-            print("Lost : ", lost)
-            self.speakError()
+            print("Lost : ", losts)
+            self.speakError(losts)
             self.awake.setState(AwakeEndState(self.awake))
         else :
             # AwakeNeed
@@ -60,8 +63,13 @@ class AwakeSetupState(AwakenState):
         else:
             return False
 
-    def speakError(self):
-        pass
+    def speakError(self, losts : list[str]):
+        str = ""
+        for lost in losts:
+            str = str + f"{lost}, "
+        subprocess.run(["sh","./scripts/speak.sh","Oups j’ai un petit soucis technique {str}sont déconnectés. Je te conseille de débrancher et rebrancher le pot."])
+        
+        
 
 class AwakeNeedState(AwakenState):
     
@@ -77,7 +85,7 @@ class AwakeNeedState(AwakenState):
         return True
 
     def speakNeeds(self):
-        pass
+        subprocess.run(["sh","./scripts/speak.sh","Je commence à avoir un peu soif"])
         
 class AwakeInfoState(AwakenState):
 
@@ -93,7 +101,8 @@ class AwakeInfoState(AwakenState):
         return True
 
     def speakInfos(self):
-        pass
+        subprocess.run(["sh","./scripts/speak.sh", "Il est 00h00, il se fait très tard. Il est l’heure d’hiberner/se coucher !"])
+        
 
 class AwakeGreetState(AwakenState):
     
@@ -109,7 +118,7 @@ class AwakeGreetState(AwakenState):
         return True
 
     def speakGreet(self):
-        print("speakGreet")
+        subprocess.run(["sh","./scripts/speak.sh", "A bientôt ! Merci d’avoir pris de mes nouvelles !"])
 
 class AwakeEndState(AwakenState):
 

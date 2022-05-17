@@ -2,12 +2,14 @@ from RPi import GPIO
 from time import sleep
 import alsaaudio
 from datetime import datetime
+mix = alsaaudio.mixers()
+print(mix[0])
 
 class VolumeSensor:
     clk = 17
     dt = 18
     counter = 50
-    mixer = alsaaudio.Mixer()
+    mixer = alsaaudio.Mixer(mix[0])
     isSave = True
     saveFilePath = "./db/sonor-volume.txt"
 
@@ -39,10 +41,10 @@ class VolumeSensor:
         if clkState != self.clkLastState:
             if dtState != clkState:
                 if self.counter < 100:
-                    self.counter += 5
+                    self.counter += 2
             else:
                 if self.counter > 0:
-                    self.counter -= 5
+                    self.counter -= 2
             self.mixer.setvolume(self.counter)
             print(self.mixer.getvolume())
             self.setSave()

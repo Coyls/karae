@@ -1,3 +1,4 @@
+import subprocess
 from utils.connectionManager import ConnectionManager
 from utils.fileManager import FileManager
 from utils.protocol import DbLineDecodeur
@@ -73,7 +74,6 @@ class Storage:
     def setupPlantCarac(self):
         self.plantCarac = self.plantsList[int(self.store["plantIndex"])]
         self.savePlantOnFile()
-        print(self.plantCarac)
 
     def savePlantOnFile(self):
         self.saveOnFile("plantIndex", self.store["plantIndex"])
@@ -84,6 +84,8 @@ class Storage:
         if newIndex < len(self.plantsList):
             self.changePlantIndexOnStore(newIndex)
             self.setupPlantCarac()
+        subprocess.run(["sh","./scripts/speak.sh", self.plantCarac["name"]])
+
 
     def changePlantLeft(self):
         currentIndex = int(self.store["plantIndex"])
@@ -91,3 +93,4 @@ class Storage:
         if newIndex >= 0:
             self.changePlantIndexOnStore(newIndex)
             self.setupPlantCarac()
+        subprocess.run(["sh","./scripts/speak.sh", self.plantCarac["name"]])
