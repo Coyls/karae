@@ -5,8 +5,6 @@ from utils.protocol import DbLineDecodeur
 import json
 from utils.speak import Speak
 
-from utils.types import BtnType
-
 class PlantsTypeManager:
     plantsFilePath = "./db/plants.json"
     plantsList = []

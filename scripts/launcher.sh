@@ -2,7 +2,7 @@
 # launcher.sh
 # Execute POC
 
-sleep 30
+sleep 10
 cd /home/pi/Documents/karae
 python3 ./server.py &
 sleep 3

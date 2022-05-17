@@ -1,8 +1,7 @@
-# from plantState import AwakeState
-
-import subprocess
-
+from datetime import datetime
 from utils.speak import Speak
+# Dev
+# from plantState import AwakeState
 
 
 class AwakenState:
@@ -90,6 +89,11 @@ class AwakeNeedState(AwakenState):
     def speakNeeds(self):
         str = "Je commence à avoir un peu soif"
         Speak.speak(str)
+
+    def checkWater(self):
+        # Verifier le delta entre maintenant et la date stocker
+        # Si 80% du temps du delta ajouter
+        hg = self.awake.plant.storage.store["humidityground"]
         
 class AwakeInfoState(AwakenState):
 
@@ -105,7 +109,10 @@ class AwakeInfoState(AwakenState):
         return True
 
     def speakInfos(self):
-        str = "Il est minuit, il se fait très tard. Il est l’heure d’hiberner/se coucher !"
+        now = datetime.now()
+        h = now.hour
+        m = now.minute
+        str = f"Il est {h} heures {m}. J'èspere que tu pass une bonne journée, pense à aller prendre l'air !"
         Speak.speak(str)
         
 

@@ -4,6 +4,8 @@ from awakenState import AwakeHelloState, AwakenState
 from utils.protocol import ProtocolGenerator
 from utils.speak import Speak
 from utils.types import BtnType
+# Dev 
+# from plant import Plant
 
 NUMBER_CONNECTION = 6
 
@@ -64,7 +66,7 @@ class SetupState(PlantState):
         nb = len(self.plant.connectionManager.clients)
         
         if (nb >= NUMBER_CONNECTION and self.twofa >= NUMBER_CONNECTION):# ! 6 pour l'instant
-            Speak.speak("Demarage de ta mère terminer")
+            Speak.speak("Demarage terminer")
             return True
         else:
             if (self.twofa == 1):
@@ -78,7 +80,7 @@ class StandbyAfterSetup(PlantState):
 
     def __init__(self, plant,delay: int):
         super().__init__(plant)
-        Speak.speak("Si tu est teuber apuie sur le collier pour lancer le tutoriel !")
+        Speak.speak("Appuie sur le collier pour lancer le tutoriel !")
         self.delay = delay
         cls = plant.connectionManager.clients
         res = dict((v,k) for k,v in cls.items())
@@ -96,6 +98,7 @@ class StandbyAfterSetup(PlantState):
     def handleDelay(self,  acces : str):
         print("Go to SleepState")
         if (acces == self.stateName):
+            Speak.speak("Je dort !")
             self.plant.setState(SleepState(self.plant))
 
     def handleButtons(self, type : BtnType):
@@ -133,6 +136,7 @@ class TutorielState(PlantState):
         if (acces == self.stateName):
             self.playTutorial()
             print("Go to SleepState")
+            Speak.speak("Je dort !")
             self.plant.setState(SleepState(self.plant))
         
 
@@ -261,6 +265,7 @@ class StandbyAfterAwake(PlantState):
     def handleDelay(self,  acces : str):
         print("Go to SleepState")
         if (acces == self.stateName):
+            Speak.speak("Je dort !")
             self.plant.setState(SleepState(self.plant))
 
     def handleButtons(self, type : BtnType):
