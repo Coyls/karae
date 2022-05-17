@@ -66,11 +66,11 @@ class SetupState(PlantState):
         nb = len(self.plant.connectionManager.clients)
         
         if (nb >= NUMBER_CONNECTION and self.twofa >= NUMBER_CONNECTION):# ! 6 pour l'instant
-            Speak.speak("Demarage terminer")
+            Speak.speak("Démarrage terminer")
             return True
         else:
             if (self.twofa == 1):
-                Speak.speak("Demarage en cours")
+                Speak.speak("Démarrage en cours")
             self.twofa += 1
             return False
         
@@ -144,6 +144,7 @@ class TutorielState(PlantState):
 
     def playTutorial(self):
         print("Play tutorial")
+        Speak.speak("Liste des instructions beaucoup trop longue pour être misent pour la demo.")
 
 class SleepState(PlantState):
     

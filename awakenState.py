@@ -36,7 +36,7 @@ class AwakeHelloState(AwakenState):
         # print("self.awake.state : ",self.awake.awakeState)
 
     def speak(self):
-        print("Speak")
+        Speak.speak("Salut humain !")
     
 class AwakeSetupState(AwakenState):
     
@@ -134,10 +134,6 @@ class AwakeGreetState(AwakenState):
         Speak.speak(str)
 
 class AwakeEndState(AwakenState):
-
-    def __init__(self, awake):
-        super().__init__(awake)
-        print("awake : " , awake.awakeState)
     
     def process(self):
         print("AwakeEndState")
