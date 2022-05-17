@@ -2,6 +2,8 @@
 
 import subprocess
 
+from utils.speak import Speak
+
 
 class AwakenState:
 
@@ -67,7 +69,8 @@ class AwakeSetupState(AwakenState):
         str = ""
         for lost in losts:
             str = str + f"{lost}, "
-        subprocess.run(["sh","./scripts/speak.sh","Oups j’ai un petit soucis technique {str}sont déconnectés. Je te conseille de débrancher et rebrancher le pot."])
+        str = f"Oups j’ai un petit soucis technique {str}sont déconnectés. Je te conseille de débrancher et rebrancher le pot."
+        Speak.speak(str)
         
         
 
@@ -85,7 +88,8 @@ class AwakeNeedState(AwakenState):
         return True
 
     def speakNeeds(self):
-        subprocess.run(["sh","./scripts/speak.sh","Je commence à avoir un peu soif"])
+        str = "Je commence à avoir un peu soif"
+        Speak.speak(str)
         
 class AwakeInfoState(AwakenState):
 
@@ -101,7 +105,8 @@ class AwakeInfoState(AwakenState):
         return True
 
     def speakInfos(self):
-        subprocess.run(["sh","./scripts/speak.sh", "Il est 00h00, il se fait très tard. Il est l’heure d’hiberner/se coucher !"])
+        str = "Il est minuit, il se fait très tard. Il est l’heure d’hiberner/se coucher !"
+        Speak.speak(str)
         
 
 class AwakeGreetState(AwakenState):
@@ -118,7 +123,8 @@ class AwakeGreetState(AwakenState):
         return True
 
     def speakGreet(self):
-        subprocess.run(["sh","./scripts/speak.sh", "A bientôt ! Merci d’avoir pris de mes nouvelles !"])
+        str = "A bientôt ! Merci d’avoir pris de mes nouvelles !"
+        Speak.speak(str)
 
 class AwakeEndState(AwakenState):
 

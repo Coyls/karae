@@ -3,6 +3,7 @@ from utils.connectionManager import ConnectionManager
 from utils.fileManager import FileManager
 from utils.protocol import DbLineDecodeur
 import json
+from utils.speak import Speak
 
 from utils.types import BtnType
 
@@ -84,7 +85,7 @@ class Storage:
         if newIndex < len(self.plantsList):
             self.changePlantIndexOnStore(newIndex)
             self.setupPlantCarac()
-        subprocess.run(["sh","./scripts/speak.sh", self.plantCarac["name"]])
+        Speak.speak(self.plantCarac["name"])
 
 
     def changePlantLeft(self):
@@ -93,4 +94,4 @@ class Storage:
         if newIndex >= 0:
             self.changePlantIndexOnStore(newIndex)
             self.setupPlantCarac()
-        subprocess.run(["sh","./scripts/speak.sh", self.plantCarac["name"]])
+        Speak.speak(self.plantCarac["name"])
