@@ -70,11 +70,10 @@ class SetupState(PlantState):
         nb = len(self.plant.connectionManager.clients)
         
         if (nb >= NUMBER_CONNECTION and self.twofa >= NUMBER_CONNECTION):# ! 6 pour l'instant
-            Speak.speak("Démarrage terminer")
             return True
         else:
             if (self.twofa == 1):
-                Speak.speak("Démarrage en cours")
+                Speak.speak("Initialisation")
             self.twofa += 1
             return False
         
@@ -95,7 +94,7 @@ class StandbyAfterSetup(PlantState):
     def handleSwitch(self):
         print("Go to TutorielState")
         # !!!!!!!!!!!!!!!!!!! TutorielState
-        self.plant.setState(AwakeState(self.plant))
+        self.plant.setState(TutorielState(self.plant))
 
     def handleProximity(self):
         pass
@@ -243,7 +242,8 @@ class AwakeState(PlantState):
         if (acces == self.stateName):
             self.awakeState.start()
             print("Go To StandbyAfterAwake")
-            self.plant.setState(StandbyAfterAwake(self.plant, 10))
+            self.plant.setState(StandbyAfterAwake(self.plant, 10))     
+
 
     # ----------------------------------------
 

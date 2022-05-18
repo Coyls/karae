@@ -7,6 +7,8 @@ from utils.utils import speakSentence
 
 class AwakenState:
 
+    stateName = "awaken-state"
+
     # ! awake : AwakeState --> pas possible d'importer ou de setup
     # ! l'IDE dectect un import circulair + class declarer avant son initialisation 
     # !!!!!!!!!!!!!!!!!!!!!!!!! vvvvvvvv Suprimer pour eviter les inport circulaire
@@ -21,6 +23,8 @@ class AwakenState:
         pass
 
 class AwakeHelloState(AwakenState):
+
+    stateName = "hello-state"
 
     def start(self):
         self.speak()
@@ -40,6 +44,8 @@ class AwakeHelloState(AwakenState):
         Speak.speak("Salut humain !")
     
 class AwakeSetupState(AwakenState):
+
+    stateName = "setup-state"
     
     def process(self):
         print("AwakeSetupState")
@@ -75,26 +81,27 @@ class AwakeSetupState(AwakenState):
         
 class AwakeNeedState(AwakenState):
 
-    hasNeed = []
+    stateName = "need-state"
+
+    needs : list[list[str,str]] = []
     
     def process(self):
         print("AwakeNeedState")
-        hasNeed = self.checkNeeds()
-        if hasNeed:
-            # Ennoncer les besoins
-            self.speakNeeds()
-            self.awake.setState(AwakeInfoMirorState(self.awake))
+        self.checkNeeds()
+        lengthNeeds = len(self.needs)
+        if lengthNeeds > 0:
+            self.awake.setState(AwakeInfoMirrorState(self.awake, self.needs))
         else: 
             self.awake.setState(AwakeInfoGeneralState(self.awake))
     
-    def checkNeeds(self) -> bool:
+    def checkNeeds(self):
         percent = self.checkWater()
         self.speakWater(percent)
-        return True
 
-    def speakNeeds(self):
-        str = "Je commence à avoir un peu soif"
-        Speak.speak(str)
+    def handleHumidityGround(self):
+        pass
+        # self.awake.setState(AwakeInfoMirrorState(self.awake, self.needs))
+
 
     def checkWater(self):
         hg = self.awake.plant.storage.store["humidityground"]
@@ -107,28 +114,34 @@ class AwakeNeedState(AwakenState):
         percent = int(100 * resRdy / delta) 
         return percent
 
+    def checkTemperature(self):
+        # Reproduire checkWater pour la tmp
+        pass
+
     def speakWater(self, percent : int):
         MIN = 20
         TARGET = 80
         sentences = self.awake.plant.sentence["needs"]["water"]
 
         if (percent <= MIN):
-            self.hasNeed.append("water")
+            self.needs.append(["water","min"])
             speakSentence(sentences["min"])
         if (percent > MIN  and percent < TARGET):
             pass
         if (percent >= TARGET):
-            self.hasNeed.append("water")
+            self.needs.append(["water","max"])
             speakSentence(sentences["max"])
 
         
         
 class AwakeInfoGeneralState(AwakenState):
 
+    stateName = "info-general-state"
+
     def process(self):
         print("AwakeInfoGeneralState")
         self.speakInfos()
-        self.awake.setState(AwakeGreetState(self.awake))
+        self.awake.setState(AwakeThanksState(self.awake))
 
     def speakInfos(self):
         now = datetime.now()
@@ -137,23 +150,28 @@ class AwakeInfoGeneralState(AwakenState):
         str = f"Il est {h} heures {m}. J'èspere que tu pass une bonne journée, pense à aller prendre l'air !"
         Speak.speak(str)
 
-class AwakeInfoMirorState(AwakenState):
+class AwakeInfoMirrorState(AwakenState):
+
+    stateName = "info-mirror-state"
+
+    def __init__(self, awake, needs : list[list[str,str]]):
+        self.needs = needs
+        super().__init__(awake)
 
     def process(self):
         print("AwakeInfoMirorState")
-        hasInfo = self.checkInfos()
-        if hasInfo:
-            self.speakInfos()
-        self.awake.setState(AwakeGreetState(self.awake))
-        
-    def checkInfos(self) -> bool:
-        return True
+        self.speakInfos()
+        self.awake.setState(AwakeThanksState(self.awake))
 
     def speakInfos(self):
-        Speak.speak("Stp bug pas")
-        
+        for need in self.needs:
+            [root, key] = need
+            sentences = self.awake.plant.sentence["mirror"][root][key]
+            speakSentence(sentences) 
 
-class AwakeGreetState(AwakenState):
+class AwakeThanksState(AwakenState):
+
+    stateName = "thanks-state"
     
     def process(self):
         print("AwakeGreetState")
@@ -171,6 +189,8 @@ class AwakeGreetState(AwakenState):
         Speak.speak(str)
 
 class AwakeEndState(AwakenState):
+
+    stateName = "end-state"
     
     def process(self):
         print("AwakeEndState")

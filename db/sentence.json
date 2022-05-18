@@ -34,13 +34,13 @@
         }
 
     },
-    "miror": {
+    "mirror": {
         "water": {
-            "delta-min": [
-                "str"
+            "min": [
+                "Tu gères la fougère, comme moi :)"
             ],
-            "delta-max": [
-                "str"
+            "max": [
+                "Merci de m’avoir arrosé. Penses à t’arroser toi aussi :)"
             ]
         },
         "temperature": {
