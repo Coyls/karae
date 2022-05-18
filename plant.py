@@ -70,10 +70,10 @@ class Plant:
             self.handleProximity()
             print("/proximity : ",self.state)
 
-        if key == "/humidity-ground":
+        if key == "/humidityground":
             print(key ,":", val)
-            self.storage.saveOnFile(key, str(datetime.datetime.now()))
-            self.storage.saveOnStore(key, str(datetime.datetime.now()))
+            self.storage.saveOnFile(key[1:], str(datetime.datetime.now()))
+            self.storage.saveOnStore(key[1:], str(datetime.datetime.now()))
         
         if key == "/temperature":
             print(key ,":", val)

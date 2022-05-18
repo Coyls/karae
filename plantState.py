@@ -7,7 +7,7 @@ from utils.types import BtnType
 # Dev 
 # from plant import Plant
 
-NUMBER_CONNECTION = 6
+NUMBER_CONNECTION = 7
 
 class PlantState:
     stateName : str
@@ -176,7 +176,7 @@ class WakeUpState(PlantState):
 
     def __init__(self, plant,delay: int):
         super().__init__(plant)
-        Speak.speak("Petit fils de pute, pourquoi tu m'a réveillé ?")
+        Speak.speak("Hey ! pourquoi tu m'a réveillé ?")
         self.delay = delay
         cls = plant.connectionManager.clients
         res = dict((v,k) for k,v in cls.items())
@@ -194,7 +194,7 @@ class WakeUpState(PlantState):
     def handleDelay(self,  acces : str):
         print("Go to SleepState")
         if (acces == self.stateName):
-            Speak.speak("Je retourne dormir, tocard !")
+            Speak.speak("Je retourne dormir !")
             self.plant.setState(SleepState(self.plant))
 
     def handleButtons(self, type : BtnType):
@@ -210,7 +210,7 @@ class AwakeState(PlantState):
     awakeState : AwakenState
 
     def __init__(self, plant):
-        Speak.speak("Ok connard je vais t'aider !")
+        Speak.speak("Ok je vais t'aider !")
         super().__init__(plant)
         self.awakeState = AwakeHelloState(self)
         cls = plant.connectionManager.clients
