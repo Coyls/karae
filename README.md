@@ -1,12 +1,18 @@
 # Karae
 
-## Installation
+## Installation  
+
+Python  
 ```sh
 sudo pip install -r requirements.txt
 ```
-
 Il est possible qu'il manque des packages apt et des libs python.  
-Regarder les erreurs et installer les packages signaler comme manquant.
+Regarder les erreurs et installer les packages signaler comme manquant.  
+
+Puck  
+```sh
+cd ./puck && npm install
+```
 
 ## Branchements
 
