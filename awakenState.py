@@ -1,9 +1,9 @@
 from datetime import datetime
+import time
 from utils.speak import Speak
 from utils.utils import speakSentence
 # Dev
 # from plantState import AwakeState
-
 
 class AwakenState:
 
@@ -41,7 +41,7 @@ class AwakeHelloState(AwakenState):
         # print("self.awake.state : ",self.awake.awakeState)
 
     def speak(self):
-        Speak.speak("Salut humain !")
+        Speak.speak("Contente de te voir j'èspere que tu vas bien !")
     
 class AwakeSetupState(AwakenState):
 
@@ -77,8 +77,7 @@ class AwakeSetupState(AwakenState):
             str = str + f"{lost}, "
         str = f"Oups j’ai un petit soucis technique {str}sont déconnectés. Je te conseille de débrancher et rebrancher le pot."
         Speak.speak(str)
-        
-        
+           
 class AwakeNeedState(AwakenState):
 
     stateName = "need-state"
@@ -90,6 +89,7 @@ class AwakeNeedState(AwakenState):
         self.checkNeeds()
         lengthNeeds = len(self.needs)
         if lengthNeeds > 0:
+            time.sleep(3)
             self.awake.setState(AwakeInfoMirrorState(self.awake, self.needs))
         else: 
             self.awake.setState(AwakeInfoGeneralState(self.awake))
@@ -127,9 +127,7 @@ class AwakeNeedState(AwakenState):
         if (percent >= TARGET):
             self.needs.append(["water","max"])
             speakSentence(sentences["max"])
-
-        
-        
+  
 class AwakeInfoGeneralState(AwakenState):
 
     stateName = "info-general-state"
@@ -143,7 +141,8 @@ class AwakeInfoGeneralState(AwakenState):
         now = datetime.now()
         h = now.hour
         m = now.minute
-        str = f"Il est {h} heures {m}. J'èspere que tu pass une bonne journée, pense à aller prendre l'air !"
+        tmp = self.awake.plant.storage.store["temperature"]
+        str = f"Il est {h} heures {m}, la temperature est de {tmp} degré. J'èspere que tu pass une bonne journée, pense à aller prendre l'air !"
         Speak.speak(str)
 
 class AwakeInfoMirrorState(AwakenState):

@@ -93,16 +93,15 @@ class StandbyAfterSetup(PlantState):
 
     def handleSwitch(self):
         print("Go to TutorielState")
-        # !!!!!!!!!!!!!!!!!!! TutorielState
         self.plant.setState(TutorielState(self.plant))
 
     def handleProximity(self):
         pass
 
     def handleDelay(self,  acces : str):
-        print("Go to SleepState")
         if (acces == self.stateName):
-            Speak.speak("Je dort !")
+            Speak.speak("N'ésite pas a me reveiller, je te dirai ce dont j'ai besoin !")
+            print("Go to SleepState")
             self.plant.setState(SleepState(self.plant))
 
     def handleButtons(self, type : BtnType):
@@ -140,7 +139,7 @@ class TutorielState(PlantState):
         if (acces == self.stateName):
             self.playTutorial()
             print("Go to SleepState")
-            Speak.speak("Je dort !")
+            Speak.speak("N'ésite pas a me reveiller, je te dirai ce dont j'ai besoin !")
             self.plant.setState(SleepState(self.plant))
         
 
@@ -249,7 +248,6 @@ class AwakeState(PlantState):
 
     def setState(self, state : AwakenState):
         self.state = state
-    
 
 class StandbyAfterAwake(PlantState):
 
@@ -274,7 +272,8 @@ class StandbyAfterAwake(PlantState):
     def handleDelay(self,  acces : str):
         print("Go to SleepState")
         if (acces == self.stateName):
-            Speak.speak("Je dort !")
+            sentences = self.plant.sentence["return-to-sleep"]
+            speakSentence(sentences)
             self.plant.setState(SleepState(self.plant))
 
     def handleButtons(self, type : BtnType):
