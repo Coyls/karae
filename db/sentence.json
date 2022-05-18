@@ -1,0 +1,39 @@
+{
+    "hello": [
+        "Hello",
+        "Hello"
+    ],
+    "goodbye": [
+        "goodbye",
+        "goodbye"
+    ],
+    "tutorial": "Text tutoriel",
+    "thanks": [
+        "Merci",
+        "Merci"
+    ],
+    "miror": {
+        "water": {
+            "delta-min": [
+                "str"
+            ],
+            "delta-max": [
+                "str"
+            ]
+        },
+        "temperature": {
+            "min": [
+                "str"
+            ],
+            "max": [
+                "str"
+            ]
+        }
+    },
+    "general": {
+        "global" : ["str"],
+        "horaire" : {
+            "DEFINIR" : ""
+        }
+    }
+}

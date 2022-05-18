@@ -1,4 +1,5 @@
 import datetime
+import json
 from typing import Any
 from plantState import PlantState, SetupState
 from simple_websocket_server import WebSocket
@@ -16,6 +17,7 @@ class Plant:
     def __init__(self):
         self.state = SetupState(self)
         self.storage = Storage(self.connectionManager)
+        self.sentence = self.decodeSentenceFile()
 
     def handle(self, client : WebSocket):
         self.rooter(client)
@@ -88,5 +90,10 @@ class Plant:
             # Speak.speak(self.storage.plantCarac["name"])
             # Speak.speakGtts(self.storage.plantCarac["name"] + f" et la température est de {self.storage.store['temperature']} degrée")
             print("/button : ",self.state)
+
+    def decodeSentenceFile(self):
+        f = open("./db/sentence.json", "r")
+        data = json.load(f)
+        return data
 
         

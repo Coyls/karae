@@ -72,7 +72,6 @@ class AwakeSetupState(AwakenState):
         Speak.speak(str)
         
         
-
 class AwakeNeedState(AwakenState):
     
     def process(self):
@@ -81,7 +80,9 @@ class AwakeNeedState(AwakenState):
         if hasNeed:
             # Ennoncer les besoins
             self.speakNeeds()
-        self.awake.setState(AwakeInfoState(self.awake))
+            self.awake.setState(AwakeInfoMirorState(self.awake))
+        else: 
+            self.awake.setState(AwakeInfoGeneralState(self.awake))
     
     def checkNeeds(self) -> bool:
         return True
@@ -95,13 +96,26 @@ class AwakeNeedState(AwakenState):
         # Si 80% du temps du delta ajouter
         hg = self.awake.plant.storage.store["humidityground"]
         
-class AwakeInfoState(AwakenState):
+class AwakeInfoGeneralState(AwakenState):
 
     def process(self):
-        print("AwakeInfoState")
+        print("AwakeInfoGeneralState")
+        self.speakInfos()
+        self.awake.setState(AwakeGreetState(self.awake))
+
+    def speakInfos(self):
+        now = datetime.now()
+        h = now.hour
+        m = now.minute
+        str = f"Il est {h} heures {m}. J'èspere que tu pass une bonne journée, pense à aller prendre l'air !"
+        Speak.speak(str)
+
+class AwakeInfoMirorState(AwakenState):
+
+    def process(self):
+        print("AwakeInfoMirorState")
         hasInfo = self.checkInfos()
         if hasInfo:
-            # Ennoncer les Infos
             self.speakInfos()
         self.awake.setState(AwakeGreetState(self.awake))
         
@@ -109,10 +123,6 @@ class AwakeInfoState(AwakenState):
         return True
 
     def speakInfos(self):
-        now = datetime.now()
-        h = now.hour
-        m = now.minute
-        str = f"Il est {h} heures {m}. J'èspere que tu pass une bonne journée, pense à aller prendre l'air !"
         Speak.speak(str)
         
 
