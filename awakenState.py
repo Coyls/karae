@@ -1,5 +1,6 @@
 from datetime import datetime
 from utils.speak import Speak
+from utils.utils import speakSentence
 # Dev
 # from plantState import AwakeState
 
@@ -73,6 +74,8 @@ class AwakeSetupState(AwakenState):
         
         
 class AwakeNeedState(AwakenState):
+
+    hasNeed = []
     
     def process(self):
         print("AwakeNeedState")
@@ -85,6 +88,8 @@ class AwakeNeedState(AwakenState):
             self.awake.setState(AwakeInfoGeneralState(self.awake))
     
     def checkNeeds(self) -> bool:
+        percent = self.checkWater()
+        self.speakWater(percent)
         return True
 
     def speakNeeds(self):
@@ -92,9 +97,31 @@ class AwakeNeedState(AwakenState):
         Speak.speak(str)
 
     def checkWater(self):
-        # Verifier le delta entre maintenant et la date stocker
-        # Si 80% du temps du delta ajouter
         hg = self.awake.plant.storage.store["humidityground"]
+        waterDb = datetime.strptime(hg, '%Y-%m-%d %H:%M:%S.%f')
+        now = datetime.now()
+        res = now - waterDb
+        # !! Definir si second ou jours
+        resRdy = int(res.total_seconds())
+        delta = int(self.awake.plant.storage.plantCarac["deltaWater"])
+        percent = int(100 * resRdy / delta) 
+        return percent
+
+    def speakWater(self, percent : int):
+        MIN = 20
+        TARGET = 80
+        sentences = self.awake.plant.sentence["needs"]["water"]
+
+        if (percent <= MIN):
+            self.hasNeed.append("water")
+            speakSentence(sentences["min"])
+        if (percent > MIN  and percent < TARGET):
+            pass
+        if (percent >= TARGET):
+            self.hasNeed.append("water")
+            speakSentence(sentences["max"])
+
+        
         
 class AwakeInfoGeneralState(AwakenState):
 
@@ -123,7 +150,7 @@ class AwakeInfoMirorState(AwakenState):
         return True
 
     def speakInfos(self):
-        Speak.speak(str)
+        Speak.speak("Stp bug pas")
         
 
 class AwakeGreetState(AwakenState):

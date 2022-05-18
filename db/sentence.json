@@ -7,11 +7,33 @@
         "goodbye",
         "goodbye"
     ],
-    "tutorial": "Text tutoriel",
+    "tutorial": ["Liste des instructions beaucoup trop longue pour être misent pour la demo."],
     "thanks": [
         "Merci",
         "Merci"
     ],
+    "awake-state": ["Ok je vais t'aider !"],
+    "wake-up-state" : ["Hey ! pourquoi tu m'a réveillé ?"],
+    "return-to-sleep" : ["Je retourne dormir !"],
+    "needs" : {
+        "water": {
+            "min": [
+                "Ne m'arrose pas tu vas me noyer"
+            ],
+            "max": [
+                "Je vais mourir alaide"
+            ]
+        },
+        "temperature": {
+            "min": [
+                "str"
+            ],
+            "max": [
+                "str"
+            ]
+        }
+
+    },
     "miror": {
         "water": {
             "delta-min": [

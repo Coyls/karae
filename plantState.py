@@ -1,11 +1,15 @@
 import datetime
+import random
 import subprocess
 from awakenState import AwakeHelloState, AwakenState
 from utils.protocol import ProtocolGenerator
 from utils.speak import Speak
 from utils.types import BtnType
+from utils.utils import speakSentence
 # Dev 
 # from plant import Plant
+
+# random.choice(sentences)
 
 NUMBER_CONNECTION = 7
 
@@ -90,7 +94,8 @@ class StandbyAfterSetup(PlantState):
 
     def handleSwitch(self):
         print("Go to TutorielState")
-        self.plant.setState(TutorielState(self.plant))
+        # !!!!!!!!!!!!!!!!!!! TutorielState
+        self.plant.setState(AwakeState(self.plant))
 
     def handleProximity(self):
         pass
@@ -144,7 +149,8 @@ class TutorielState(PlantState):
 
     def playTutorial(self):
         print("Play tutorial")
-        Speak.speak("Liste des instructions beaucoup trop longue pour être misent pour la demo.")
+        sentences = self.plant.sentence["tutorial"]
+        speakSentence(sentences)
 
 class SleepState(PlantState):
     
@@ -176,7 +182,8 @@ class WakeUpState(PlantState):
 
     def __init__(self, plant,delay: int):
         super().__init__(plant)
-        Speak.speak("Hey ! pourquoi tu m'a réveillé ?")
+        sentences = self.plant.sentence["wake-up-state"]
+        speakSentence(sentences)
         self.delay = delay
         cls = plant.connectionManager.clients
         res = dict((v,k) for k,v in cls.items())
@@ -210,8 +217,9 @@ class AwakeState(PlantState):
     awakeState : AwakenState
 
     def __init__(self, plant):
-        Speak.speak("Ok je vais t'aider !")
         super().__init__(plant)
+        sentences = self.plant.sentence["awake-state"]
+        speakSentence(sentences)
         self.awakeState = AwakeHelloState(self)
         cls = plant.connectionManager.clients
         res = dict((v,k) for k,v in cls.items())
@@ -281,7 +289,7 @@ class SelectPlantState(PlantState):
 
     def __init__(self, plant):
         super().__init__(plant)
-        Speak.speak("Selectionner votre plant")
+        Speak.speak("Selectionner votre plante.")
 
     def handleSwitch(self):
         pass
@@ -314,5 +322,5 @@ class SelectPlantState(PlantState):
     def okButton(self):
         print("Go to SleepState")
         p = self.plant.storage.plantCarac["name"]
-        Speak.speak(f"{p} a été selectioner !")
+        Speak.speak(f"{p} a été selectionner !")
         self.plant.setState(SleepState(self.plant))
