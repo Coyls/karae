@@ -1,4 +1,4 @@
-# Project-Plant
+# Karae
 
 ## Installation
 ```sh
