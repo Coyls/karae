@@ -98,10 +98,6 @@ class AwakeNeedState(AwakenState):
         percent = self.checkWater()
         self.speakWater(percent)
 
-    def handleHumidityGround(self):
-        pass
-        # self.awake.setState(AwakeInfoMirrorState(self.awake, self.needs))
-
 
     def checkWater(self):
         hg = self.awake.plant.storage.store["humidityground"]
@@ -175,18 +171,12 @@ class AwakeThanksState(AwakenState):
     
     def process(self):
         print("AwakeGreetState")
-        hasGreet = self.checkGreets()
-        if hasGreet:
-            # Ennoncer les remerciment
-            self.speakGreet()
+        self.speakGreet()
         self.awake.setState(AwakeEndState(self.awake))
-    
-    def checkGreets(self) -> bool:
-        return True
 
     def speakGreet(self):
-        str = "A bientôt ! Merci d’avoir pris de mes nouvelles !"
-        Speak.speak(str)
+        sentences = self.awake.plant.sentence["thanks"]
+        speakSentence(sentences)
 
 class AwakeEndState(AwakenState):
 
