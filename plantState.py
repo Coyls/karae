@@ -11,7 +11,7 @@ from utils.utils import speakSentence
 
 # random.choice(sentences)
 
-NUMBER_CONNECTION = 7
+# NUMBER_CONNECTION = 7
 
 class PlantState:
     stateName : str
@@ -33,7 +33,7 @@ class PlantState:
     def handleButtons(self, type : BtnType):
         pass
 
-    def afterProcess(self, acces : str):
+    def process(self):
         pass
 
 class SetupState(PlantState):
@@ -55,30 +55,11 @@ class SetupState(PlantState):
     def handleButtons(self, type : BtnType):
         pass
 
-    def afterProcess(self, acces : str):
-        print("Wait for all connection")
-        isOk = self.waitForAllConnection()
-        print("isOk", isOk)
-        if isOk:
-            self.plant.storage.initStorage()
-            print("Go to StandbyAfterSetup after init storage !")
-            self.plant.setState(StandbyAfterSetup(self.plant,10))
-    
-    # ----------------------------------------
-
-    def waitForAllConnection(self) -> bool:
-        nb = len(self.plant.connectionManager.clients)
-        
-        if (nb >= NUMBER_CONNECTION and self.twofa >= NUMBER_CONNECTION):# ! 6 pour l'instant
-            return True
-        else:
-            if (self.twofa == 1):
-                Speak.speak("Initialisation")
-            self.twofa += 1
-            return False
+    def process(self):
+        pass
         
 class StandbyAfterSetup(PlantState):
-    # Wait for user action or pass
+
     stateName = "standby-after-setup"
 
     def __init__(self, plant,delay: int):
@@ -107,21 +88,12 @@ class StandbyAfterSetup(PlantState):
     def handleButtons(self, type : BtnType):
         pass
 
-    def afterProcess(self, acces : str):
+    def process(self, acces : str):
         pass
 
 class TutorielState(PlantState):
 
     stateName = "tutoriel-state"
-
-    def __init__(self, plant):
-        Speak.speak("Lancement du tutoriel")
-        super().__init__(plant)
-        cls = plant.connectionManager.clients
-        res = dict((v,k) for k,v in cls.items())
-        cl = res["process"]
-        data = ProtocolGenerator(self.stateName,str(1))
-        cl.send_message(data.create())
 
     def handleSwitch(self):
         pass
@@ -135,14 +107,13 @@ class TutorielState(PlantState):
     def handleButtons(self, type : BtnType):
         pass
 
-    def afterProcess(self, acces : str):
-        if (acces == self.stateName):
-            self.playTutorial()
-            print("Go to SleepState")
-            Speak.speak("N'ésite pas a me reveiller, je te dirai ce dont j'ai besoin !")
-            self.plant.setState(SleepState(self.plant))
+    def process(self):
+        Speak.speak("Lancement du tutoriel")
+        self.playTutorial()
+        print("Go to SleepState")
+        Speak.speak("N'ésite pas a me reveiller, je te dirai ce dont j'ai besoin !")
+        self.plant.setState(SleepState(self.plant))
         
-
     # ----------------------------------------
 
     def playTutorial(self):
@@ -171,7 +142,7 @@ class SleepState(PlantState):
         print("Go to SelectPlantState")
         self.plant.setState(SelectPlantState(self.plant))
 
-    def afterProcess(self, acces : str):
+    def process(self):
         pass
 
 class WakeUpState(PlantState):
@@ -206,7 +177,7 @@ class WakeUpState(PlantState):
         print("Go to SelectPlantState")
         self.plant.setState(SelectPlantState(self.plant))
 
-    def afterProcess(self, acces : str):
+    def process(self):
         pass
 
 class AwakeState(PlantState):
@@ -216,14 +187,7 @@ class AwakeState(PlantState):
 
     def __init__(self, plant):
         super().__init__(plant)
-        sentences = self.plant.sentence["awake-state"]
-        speakSentence(sentences)
         self.awakeState = AwakeHelloState(self)
-        cls = plant.connectionManager.clients
-        res = dict((v,k) for k,v in cls.items())
-        cl = res["process"]
-        data = ProtocolGenerator(self.stateName,str(1))
-        cl.send_message(data.create())
 
     def handleSwitch(self):
         pass
@@ -237,11 +201,12 @@ class AwakeState(PlantState):
     def handleButtons(self, type : BtnType):
         pass
 
-    def afterProcess(self, acces : str):
-        if (acces == self.stateName):
-            self.awakeState.start()
-            print("Go To StandbyAfterAwake")
-            self.plant.setState(StandbyAfterAwake(self.plant, 10))     
+    def process(self):
+        sentences = self.plant.sentence["awake-state"]
+        speakSentence(sentences)
+        self.awakeState.start()
+        print("Go To StandbyAfterAwake")
+        # self.plant.setState(StandbyAfterAwake(self.plant, 10))     
 
 
     # ----------------------------------------
@@ -279,16 +244,12 @@ class StandbyAfterAwake(PlantState):
     def handleButtons(self, type : BtnType):
         pass
 
-    def afterProcess(self, acces : str):
+    def process(self):
         pass
 
 class SelectPlantState(PlantState):
     
-    stateName = "select-plant-state"
-
-    def __init__(self, plant):
-        super().__init__(plant)
-        Speak.speak("Selectionner votre plante.")
+    stateName = "select-plant-state"      
 
     def handleSwitch(self):
         pass
@@ -307,8 +268,8 @@ class SelectPlantState(PlantState):
         if type == BtnType.LEFT.value:
             self.leftButton()
 
-    def afterProcess(self, acces : str):
-        pass
+    def process(self, acces : str):
+        Speak.speak("Selectionner votre plante.")
 
     # ----------------------------------------
 
