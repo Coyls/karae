@@ -9,10 +9,6 @@ from utils.utils import speakSentence
 # Dev 
 # from plant import Plant
 
-# random.choice(sentences)
-
-# NUMBER_CONNECTION = 7
-
 class PlantState:
     stateName : str
 
@@ -88,7 +84,7 @@ class StandbyAfterSetup(PlantState):
     def handleButtons(self, type : BtnType):
         pass
 
-    def process(self, acces : str):
+    def process(self):
         pass
 
 class TutorielState(PlantState):
@@ -185,27 +181,24 @@ class AwakeState(PlantState):
     stateName = "awake-state"
     awakeState : AwakenState
 
-    def __init__(self, plant):
-        super().__init__(plant)
-        self.awakeState = AwakeHelloState(self)
-
     def handleSwitch(self):
         pass
 
     def handleProximity(self):
-        pass
+        self.awakeState.handleSwitch()
 
     def handleDelay(self,  acces : str):
-        pass
+        if (acces == self.awakeState.stateName):
+            self.awakeState.handleDelay()
 
     def handleButtons(self, type : BtnType):
         pass
 
     def process(self):
-        sentences = self.plant.sentence["awake-state"]
-        speakSentence(sentences)
-        self.awakeState.start()
-        print("Go To StandbyAfterAwake")
+        self.AwakeStateSpeak()
+        self.setState(AwakeHelloState(self))
+
+        #print("Go To StandbyAfterAwake")
         # self.plant.setState(StandbyAfterAwake(self.plant, 10))     
 
 
@@ -213,12 +206,17 @@ class AwakeState(PlantState):
 
     def setState(self, state : AwakenState):
         self.state = state
+        self.state.process()
+
+    def AwakeStateSpeak(self):
+        sentences = self.plant.sentence["awake-state"]
+        speakSentence(sentences)
 
 class StandbyAfterAwake(PlantState):
 
     stateName = "standby-after-awake"
     
-    def __init__(self, plant,delay: int):
+    def __init__(self,plant,delay: int):
         super().__init__(plant)
         self.delay = delay
         cls = plant.connectionManager.clients

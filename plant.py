@@ -105,7 +105,7 @@ class Plant:
         if isOk:
             self.storage.initStorage()
             print("Go to StandbyAfterSetup after init storage !")
-            self.setState(StandbyAfterSetup(self,10))
+            self.setState(StandbyAfterSetup(self,5))
 
     def waitForAllConnection(self) -> bool:
         nb = len(self.connectionManager.clients)

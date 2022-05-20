@@ -1,5 +1,6 @@
 from datetime import datetime
 import time
+from utils.protocol import ProtocolGenerator
 from utils.speak import Speak
 from utils.utils import speakSentence
 # Dev
@@ -14,35 +15,24 @@ class AwakenState:
     # !!!!!!!!!!!!!!!!!!!!!!!!! vvvvvvvv Suprimer pour eviter les inport circulaire
     def __init__(self, awake):
         self.awake = awake
-        self.process()
 
     def process(self):
         pass
 
-    def start(self):
+    def handleDelay(self):
+        pass
+
+    def handleSwitch(self):
         pass
 
 class AwakeHelloState(AwakenState):
 
     stateName = "hello-state"
 
-    def start(self):
-        self.speak()
-        self.setState()
-
     def process(self):
-        print("Ready to start !")
-        print("AwakeHelloState")
-        
-
-    def setState(self):
-        print("self.awake.state : ",self.awake.awakeState)
-        self.awake.setState(AwakeSetupState(self.awake))
-        # print("self.awake.state : ",self.awake.awakeState)
-
-    def speak(self):
         Speak.speak("Contente de te voir j'èspere que tu vas bien !")
-    
+        self.awake.setState(AwakeSetupState(self.awake))
+        
 class AwakeSetupState(AwakenState):
 
     stateName = "setup-state"
@@ -52,15 +42,12 @@ class AwakeSetupState(AwakenState):
         losts = self.getConnectionLost()
         isBroken = self.checkConnectionLost(losts)
         if isBroken:
-            # Message d'erreur enonssant les capteur deco
-            # et demande a l'utilisateur de redemarer Karae
             print("Lost : ", losts)
             self.speakError(losts)
-            self.awake.setState(AwakeEndState(self.awake))
+            # self.awake.setState(AwakeEndState(self.awake))
         else :
-            # AwakeNeed
-            print("Go to AwakeNeed")
-            self.awake.setState(AwakeNeedState(self.awake))
+            pass
+            # self.awake.setState(AwakeNeedState(self.awake))
 
     def getConnectionLost(self) -> list[str]:
         return self.awake.plant.connectionManager.discClients
@@ -75,7 +62,7 @@ class AwakeSetupState(AwakenState):
         str = ""
         for lost in losts:
             str = str + f"{lost}, "
-        str = f"Oups j’ai un petit soucis technique {str}sont déconnectés. Je te conseille de débrancher et rebrancher le pot."
+        str = f"Oups j’ai un petit soucis technique, les capteurs : {str}sont déconnectés. Je te conseille de me redemarer."
         Speak.speak(str)
            
 class AwakeNeedState(AwakenState):
@@ -85,11 +72,9 @@ class AwakeNeedState(AwakenState):
     needs : list[list[str,str]] = []
     
     def process(self):
-        print("AwakeNeedState")
         self.checkNeeds()
         lengthNeeds = len(self.needs)
         if lengthNeeds > 0:
-            time.sleep(3)
             self.awake.setState(AwakeInfoMirrorState(self.awake, self.needs))
         else: 
             self.awake.setState(AwakeInfoGeneralState(self.awake))
@@ -97,7 +82,6 @@ class AwakeNeedState(AwakenState):
     def checkNeeds(self):
         percent = self.checkWater()
         self.speakWater(percent)
-
 
     def checkWater(self):
         hg = self.awake.plant.storage.store["humidityground"]
@@ -109,10 +93,6 @@ class AwakeNeedState(AwakenState):
         delta = int(self.awake.plant.storage.plantCarac["deltaWater"])
         percent = int(100 * resRdy / delta) 
         return percent
-
-    def checkTemperature(self):
-        # Reproduire checkWater pour la tmp
-        pass
 
     def speakWater(self, percent : int):
         MIN = 20
@@ -133,9 +113,8 @@ class AwakeInfoGeneralState(AwakenState):
     stateName = "info-general-state"
 
     def process(self):
-        print("AwakeInfoGeneralState")
         self.speakInfos()
-        self.awake.setState(AwakeThanksState(self.awake))
+        self.awake.setState(AwakeByeState(self.awake))
 
     def speakInfos(self):
         now = datetime.now()
@@ -150,13 +129,12 @@ class AwakeInfoMirrorState(AwakenState):
     stateName = "info-mirror-state"
 
     def __init__(self, awake, needs : list[list[str,str]]):
-        self.needs = needs
         super().__init__(awake)
+        self.needs = needs
 
     def process(self):
-        print("AwakeInfoMirorState")
         self.speakInfos()
-        self.awake.setState(AwakeThanksState(self.awake))
+        self.awake.setState(AwakeStandbyAfterMirror(self.awake))
 
     def speakInfos(self):
         for need in self.needs:
@@ -164,12 +142,36 @@ class AwakeInfoMirrorState(AwakenState):
             sentences = self.awake.plant.sentence["mirror"][root][key]
             speakSentence(sentences) 
 
-class AwakeThanksState(AwakenState):
+class AwakeStandbyAfterMirror(AwakenState):
 
-    stateName = "thanks-state"
+    stateName = "standby-after-mirror"
+
+    delay = 7
+
+    def __init__(self, awake):
+        super().__init__(awake)
+        # sentences = self.awake.plant.sentence["wake-up-state"]
+        # speakSentence(sentences)
+        cls = self.awake.plant.connectionManager.clients
+        res = dict((v,k) for k,v in cls.items())
+        cl = res["eureka"]
+        data = ProtocolGenerator(self.stateName,str(self.delay))
+        cl.send_message(data.create())
+
+    def process(self):
+        Speak.speak("Souhaite tu plus d'info ?")
+
+    def handleSwitch(self):
+        self.awake.setState(AwakeInfoGeneralState(self.awake))
+
+    def handleDelay(self):
+        self.awake.setState(AwakeEndState(self.awake))
+
+class AwakeByeState(AwakenState):
+
+    stateName = "bye-state"
     
     def process(self):
-        print("AwakeGreetState")
         self.speakGreet()
         self.awake.setState(AwakeEndState(self.awake))
 
@@ -183,8 +185,3 @@ class AwakeEndState(AwakenState):
     
     def process(self):
         print("AwakeEndState")
-        
-        
-
-
-        
